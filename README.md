@@ -60,6 +60,8 @@ of Haskell's type-classes and parametric polymorphism.
 
 ## Original intention:
 
+aka. "original *readme*":
+
 ~~Primarily, this "toy-lang REPL"s commit history
 mirrors my chapter-by-chapter walk through
 http://okmij.org/ftp/tagless-final/course/lecture.pdf~~
