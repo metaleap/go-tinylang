@@ -11,7 +11,7 @@ func writeLn(s string) { _, _ = os.Stdout.WriteString(s + "\n") }
 
 func main() {
 	repl := bufio.NewScanner(os.Stdin)
-	writeLn(`REPL for our demo 'NanoCalc'
+	writeLn(`REPL for our demo 'TinyCalc'
 language, consisting only of:
 float operands, parens and the 4
 most basic arithmetic operators

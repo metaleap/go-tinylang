@@ -1,6 +1,6 @@
 This little program's *Welcome* message says it all:
 
-    REPL for our demo 'NanoCalc'
+    REPL for our demo 'TinyCalc'
     language, consisting only of:
     float operands, parens and the 4
     most basic arithmetic operators
@@ -44,11 +44,13 @@ the terser and more comprehensible one;
 implement the "tagless final" approach cited
 in more detail below. While this would be
 the much more desirable approach in a language
-such as Haskell, in Go it immediately necessitates
+such as Haskell (*and* when targeting E-DSLs),
+in Go (and targeting lexed-parsed instead of
+embeddded languages) it immediately necessitates
 such endless plumbing and hard-coding that any
 theoretical gains are overshadowed by code bloat.
-(Especially so if one attempted to progress
-*beyond* `lecture.pdf`'s chapter 2...)
+(Especially so if one wanted to progress
+*beyond* chapter 2 of `lecture.pdf`...)
 
 
 ## Original intention:
