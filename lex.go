@@ -9,16 +9,16 @@ import (
 
 type iToken interface{}
 type tokenNum float64
-type tokenOp struct{ op string }
-type tokenParen struct{ opening bool }
+type tokenOp string
+type tokenParen bool // true for opening, false for closing paren .. hacky, eh?
 
 func lex(src string) (tokenStream []iToken, err error) { // accumulating in a return slice defeats the idea of scalable streaming (eg. parallel lex-parse pipeline), but really no matter in this toy
-	var lex scanner.Scanner
-	lex.Init(strings.NewReader(src)).Filename = src
-	lex.Mode = scanner.ScanFloats | scanner.ScanInts | scanner.SkipComments
-	lex.Error = func(_ *scanner.Scanner, msg string) { err = errors.New(msg) }
-	for tok := lex.Scan(); (err == nil) && (tok != scanner.EOF); tok = lex.Scan() {
-		if sym := lex.TokenText(); sym != "" { // should never be "" anyway, really
+	var lexer scanner.Scanner
+	lexer.Init(strings.NewReader(src)).Filename = src
+	lexer.Mode = scanner.ScanFloats | scanner.ScanInts | scanner.SkipComments
+	lexer.Error = func(_ *scanner.Scanner, msg string) { err = errors.New(msg) }
+	for tok := lexer.Scan(); (err == nil) && (tok != scanner.EOF); tok = lexer.Scan() {
+		if sym := lexer.TokenText(); sym != "" { // should never be "" anyway, really
 			switch tok {
 			case scanner.Float:
 				var f float64
@@ -33,11 +33,11 @@ func lex(src string) (tokenStream []iToken, err error) { // accumulating in a re
 			default:
 				switch sym {
 				case "+", "-", "*", "/":
-					tokenStream = append(tokenStream, tokenOp{op: sym})
+					tokenStream = append(tokenStream, tokenOp(sym))
 				case "(", ")":
-					tokenStream = append(tokenStream, tokenParen{opening: sym == "("})
+					tokenStream = append(tokenStream, tokenParen(sym == "("))
 				default:
-					err = errors.New("Unrecognized symbol: " + sym)
+					err = errors.New("unrecognized token: " + sym)
 				}
 			}
 		}

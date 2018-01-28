@@ -5,20 +5,30 @@ import (
 )
 
 func altInterp_PrettyPrint(expr iExpr) (fmt.Stringer, error) {
-	return altSymStr{}.interp(expr)
+	s, e := altSymStr{}.interp(expr)
+	return s.(altReprStr), e
 }
 
 func altInterp_Eval(expr iExpr) (fmt.Stringer, error) {
-	return altSymNum{}.interp(expr)
+	n, e := altSymNum{}.interp(expr)
+	return n.(altReprNum), e
 }
 
-type iAltRepr interface {
-	fmt.Stringer
-}
+// representation type
+type iAltRepr interface{}
 
+type altReprNum num
+
+func (me altReprNum) String() string { return num(me).String() }
+
+type altReprStr string
+
+func (me altReprStr) String() string { return string(me) }
+
+// language vocabulary
 type iAltSymantics interface {
 	interp(iExpr) (iAltRepr, error)
-	lit(num) iAltRepr
+
 	neg(iAltRepr) iAltRepr
 	pos(iAltRepr) iAltRepr
 	add(iAltRepr, iAltRepr) iAltRepr
@@ -26,10 +36,6 @@ type iAltSymantics interface {
 	mul(iAltRepr, iAltRepr) iAltRepr
 	div(iAltRepr, iAltRepr) (iAltRepr, error)
 }
-
-type altReprNum num
-
-func (me altReprNum) String() string { return num(me).String() }
 
 type altSymNum struct{}
 
@@ -60,7 +66,7 @@ func (me altSymNum) mul(l iAltRepr, r iAltRepr) iAltRepr {
 func (me altSymNum) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	left, right := l.(altReprNum), r.(altReprNum)
 	if right == 0 {
-		return right, errInterpDiv0(l.String())
+		return altReprNum(0), errInterpDiv0(left.String())
 	}
 	return left / right, nil
 }
@@ -74,18 +80,13 @@ func (me altSymNum) interp(expr iExpr) (repr iAltRepr, err error) {
 	case *exprOp2:
 		repr, err = altInterpOp2(me, x)
 	}
+	if err != nil {
+		repr = altReprNum(0)
+	}
 	return
 }
 
-type altReprStr string
-
-func (me altReprStr) String() string { return string(me) }
-
 type altSymStr struct{}
-
-func (me altSymStr) lit(n num) iAltRepr {
-	return altReprStr(n.String())
-}
 
 func (me altSymStr) neg(r iAltRepr) iAltRepr {
 	return "(-" + r.(altReprStr) + ")"
@@ -119,6 +120,9 @@ func (me altSymStr) interp(expr iExpr) (repr iAltRepr, err error) {
 		repr, err = altInterpOp1(me, x)
 	case *exprOp2:
 		repr, err = altInterpOp2(me, x)
+	}
+	if err != nil {
+		repr = altReprStr("")
 	}
 	return
 }

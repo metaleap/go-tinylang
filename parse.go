@@ -13,9 +13,9 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 		case tokenNum:
 			cur = newLit(float64(curtoken))
 		case tokenOp:
-			cur = newOp2(nil, curtoken.op, nil)
+			cur = newOp2(nil, string(curtoken), nil)
 		case tokenParen:
-			if curtoken.opening {
+			if curtoken { // opening paren if true, else closing paren
 				stack = append(stack, last)
 				last = nil
 			} else if len(stack) == 0 {

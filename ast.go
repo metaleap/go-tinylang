@@ -9,6 +9,10 @@ type iExpr interface {
 	parseJoinPrev(iExpr) (iExpr, error)
 }
 
+func newLit(n float64) iExpr                   { return &exprLit{Num: num(n)} }
+func newOp1(op string, r iExpr) iExpr          { return &exprOp1{Op: op, Right: r} }
+func newOp2(l iExpr, op string, r iExpr) iExpr { return &exprOp2{Left: l, Op: op, Right: r} }
+
 type exprLit struct {
 	Num num
 }
@@ -24,22 +28,6 @@ type exprOp2 struct {
 	Right iExpr
 }
 
-func newLit(n float64) iExpr {
-	return &exprLit{Num: num(n)}
-}
-
 func (me *exprLit) String() string { return me.Num.String() }
-
-func newOp1(op string, right iExpr) iExpr {
-	return &exprOp1{Op: op, Right: right}
-}
-
-func (me *exprOp1) String() string { return fmt.Sprintf("(%s%s)", me.Op, stringer(me.Right)) }
-
-func newOp2(left iExpr, op string, right iExpr) iExpr {
-	return &exprOp2{Left: left, Op: op, Right: right}
-}
-
-func (me *exprOp2) String() string {
-	return fmt.Sprintf("(%s %s %s)", stringer(me.Left), me.Op, stringer(me.Right))
-}
+func (me *exprOp1) String() string { return strf("(%s%s)", me.Op, str(me.Right)) }
+func (me *exprOp2) String() string { return strf("(%s %s %s)", str(me.Left), me.Op, str(me.Right)) }

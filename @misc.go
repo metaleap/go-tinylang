@@ -3,13 +3,18 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 )
 
-type interp func(expr iExpr) (fmt.Stringer, error)
+type interpreter func(expr iExpr) (fmt.Stringer, error)
 
-type num float64 // just for fmt.Stringer.String()
+type num float64
 
-func (me num) String() string { return fmt.Sprintf("%g", float64(me)) }
+func (me num) String() string { return strf("%g", float64(me)) }
+
+var strf = fmt.Sprintf
+
+func writeLn(s string) { _, _ = os.Stdout.WriteString(s + "\n") }
 
 func errPick(errs ...error) error {
 	for _, e := range errs {
@@ -36,10 +41,10 @@ func errInterpLate(expr iExpr) error {
 	return errors.New("invalid operand or operator in: " + expr.String())
 }
 
-func stringer(str interface{}) (s fmt.Stringer) {
-	s, _ = str.(fmt.Stringer)
-	if s == nil {
-		s = strNil{}
+func str(any interface{}) (stringer fmt.Stringer) {
+	stringer, _ = any.(fmt.Stringer)
+	if stringer == nil {
+		stringer = strNil{}
 	}
 	return
 }
