@@ -10,20 +10,24 @@ import (
 func main() {
 	interp_prettyprint, interp_eval := adtInterp_PrettyPrint, adtInterp_Eval
 	alt, repl := false, bufio.NewScanner(os.Stdin)
-	writeLn(`==========================================
-REPL for our demo 'TinyCalc'
-language, consisting only of:
-float operands, parens and the 4
-most basic arithmetic operators
-(with no precedence: use parens).
 
-Enter:
-· Q to quit
-· A to toggle between:
+	writeLn(`
+——————————————————————————————————————————————
+  REPL for our demo 'TinyCalc'
+  language, consisting only of:
+  float operands, parens and the 4
+  most basic arithmetic operators
+  (with no precedence: use parens).
+
+  Enter:
+  · Q to quit
+  · A to toggle between:
   · "ADT" interpreter approach (default)
   · "Alt" interpreter approach
-· <expr> to parse-and-prettyprint-and-eval
+  · <expr> to parse-and-prettyprint-and-eval
+——————————————————————————————————————————————
 `)
+
 	for repl.Scan() {
 		if err := repl.Err(); err != nil {
 			panic(err)
