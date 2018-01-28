@@ -27,7 +27,7 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 				last = nil
 			case tokenSepParenClose:
 				if len(stack) == 0 {
-					err = errors.New("mis-matched opening and closing parens")
+					err = errors.New("mis-matched opening/closing parens")
 				} else {
 					if last == nil {
 						err = errors.New("empty parens")
@@ -37,8 +37,11 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 							outer1.Right = last
 							last, cur = nil, outer1
 						} else if outer2, ok2 := outer.(*adtExprOp2); ok2 {
-							outer2.Right = last
-							last, cur = nil, outer2
+							if outer2.Right = last; outer2.Left == nil {
+								last, cur = nil, adtOp1(outer2.Op, outer2.Right)
+							} else {
+								last, cur = nil, outer2
+							}
 						} else if outer != nil {
 							err = errors.New("invalid left-hand-side of parens: " + outer.String())
 						}
@@ -62,7 +65,7 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 			}
 		}
 		if len(stack) > 0 {
-			err = errors.New("mis-matched opening and closing parens")
+			err = errors.New("invalid parens placement or opening/closing parens mis-match")
 		}
 		if err == nil {
 			expr = last
@@ -73,15 +76,24 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 
 func (me *adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	switch xp := prev.(type) {
+	case *adtExprOp1:
+		if xp.Right == nil {
+			xp.Right = me
+			expr = xp
+		} else {
+			err = errors.New("orphan number " + me.String() + " following unary operator `" + xp.Op + "` expression (use parens for grouping)")
+		}
 	case *adtExprOp2:
 		if xp.Left == nil {
 			expr = adtOp1(xp.Op, me)
-		} else {
+		} else if xp.Right == nil {
 			xp.Right = me
 			expr = xp
+		} else {
+			err = errors.New("orphan number " + me.String() + " following binary operator `" + xp.Op + "` expression")
 		}
 	}
-	if expr == nil {
+	if expr == nil && err == nil {
 		err = errors.New("invalid symbol preceding " + me.String())
 	}
 	return
@@ -93,7 +105,11 @@ func (me *adtExprOp1) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 }
 
 func (me *adtExprOp2) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
-	me.Left = prev
-	expr = me
+	if op2, _ := prev.(*adtExprOp2); op2 != nil && op2.Left == nil && op2.Right == nil {
+		expr = adtOp1(op2.Op, me)
+	} else {
+		me.Left = prev
+		expr = me
+	}
 	return
 }
