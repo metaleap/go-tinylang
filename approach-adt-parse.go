@@ -33,14 +33,14 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 						err = errors.New("empty parens")
 					} else {
 						outer := stack[len(stack)-1]
-						if outer1, ok1 := outer.(adtExprOp1); ok1 {
+						if outer1, ok1 := outer.(*adtExprOp1); ok1 {
 							outer1.Right = last
 							last, cur = nil, outer1
-						} else if outer2, ok2 := outer.(adtExprOp2); ok2 {
+						} else if outer2, ok2 := outer.(*adtExprOp2); ok2 {
 							outer2.Right = last
 							last, cur = nil, outer2
 						} else if outer != nil {
-							err = errors.New("how odd")
+							err = errors.New("invalid left-hand-side of parens: " + outer.String())
 						}
 					}
 					stack = stack[:len(stack)-1]
@@ -71,14 +71,9 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 	return
 }
 
-func (me adtExprOp1) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
-	err = errors.New("the unexpected occurred --- bug in parser!")
-	return
-}
-
-func (me adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
+func (me *adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	switch xp := prev.(type) {
-	case adtExprOp2:
+	case *adtExprOp2:
 		if xp.Left == nil {
 			expr = adtOp1(xp.Op, me)
 		} else {
@@ -92,7 +87,12 @@ func (me adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	return
 }
 
-func (me adtExprOp2) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
+func (me *adtExprOp1) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
+	err = errors.New("unexpected left-hand side of unary operator: " + me.Op)
+	return
+}
+
+func (me *adtExprOp2) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	me.Left = prev
 	expr = me
 	return

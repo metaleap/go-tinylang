@@ -69,3 +69,15 @@ func errPick(errs ...error) error {
 	}
 	return nil
 }
+
+func stringer(str interface{}) (s fmt.Stringer) {
+	s, _ = str.(fmt.Stringer)
+	if s == nil {
+		s = strNil{}
+	}
+	return
+}
+
+type strNil struct{}
+
+func (strNil) String() string { return "?" }
