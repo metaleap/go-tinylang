@@ -43,7 +43,7 @@ Enter:
 					writeLn("Now using 'ADT' interpreter approach")
 				}
 			default:
-				if err = parseAndInterp(readln, interp_prettyprint, interp_eval); err != nil {
+				if err = lexAndParseAndInterp(readln, interp_prettyprint, interp_eval); err != nil {
 					println(err.Error())
 				}
 			}
@@ -51,15 +51,18 @@ Enter:
 	}
 }
 
-func parseAndInterp(src string, interps ...interp) (err error) {
-	var expr iExpr
-	var val fmt.Stringer
-	if expr, err = parse(src); err == nil {
-		for _, interp := range interps {
-			if val, err = interp(expr); err != nil {
-				break
-			} else {
-				fmt.Printf("\n%s\n", val)
+func lexAndParseAndInterp(src string, interps ...interp) (err error) {
+	var lexed []iToken
+	if lexed, err = lex(src); err == nil {
+		var expr iExpr
+		if expr, err = parse(lexed); err == nil {
+			for _, interp := range interps {
+				var val fmt.Stringer
+				if val, err = interp(expr); err != nil {
+					break
+				} else {
+					fmt.Printf("\n%s\n", val)
+				}
 			}
 		}
 	}
