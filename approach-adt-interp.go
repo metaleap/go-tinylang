@@ -11,7 +11,7 @@ func adtInterp_PrettyPrint(expr iExpr) (fmt.Stringer, error) {
 func adtInterp_Eval(expr iExpr) (fmt.Stringer, error) {
 	switch me := expr.(type) {
 	case *exprLit:
-		return num(me.Num), nil
+		return me.Num, nil
 	case *exprOp1:
 		if me.Right != nil {
 			n, e := adtInterp_Eval(me.Right)

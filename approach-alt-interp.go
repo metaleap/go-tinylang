@@ -88,27 +88,27 @@ func (me altSymStr) lit(n num) iAltRepr {
 }
 
 func (me altSymStr) neg(r iAltRepr) iAltRepr {
-	return altReprStr("(-" + r.(altReprStr) + ")")
+	return "(-" + r.(altReprStr) + ")"
 }
 
 func (me altSymStr) pos(r iAltRepr) iAltRepr {
-	return altReprStr("(+" + r.(altReprStr) + ")")
+	return "(+" + r.(altReprStr) + ")"
 }
 
 func (me altSymStr) add(l iAltRepr, r iAltRepr) iAltRepr {
-	return altReprStr("(" + l.(altReprStr) + " + " + r.(altReprStr) + ")")
+	return "(" + l.(altReprStr) + " + " + r.(altReprStr) + ")"
 }
 
 func (me altSymStr) sub(l iAltRepr, r iAltRepr) iAltRepr {
-	return altReprStr("(" + l.(altReprStr) + " - " + r.(altReprStr) + ")")
+	return "(" + l.(altReprStr) + " - " + r.(altReprStr) + ")"
 }
 
 func (me altSymStr) mul(l iAltRepr, r iAltRepr) iAltRepr {
-	return altReprStr("(" + l.(altReprStr) + " * " + r.(altReprStr) + ")")
+	return "(" + l.(altReprStr) + " * " + r.(altReprStr) + ")"
 }
 
 func (me altSymStr) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
-	return altReprStr("(" + l.(altReprStr) + " / " + r.(altReprStr) + ")"), nil
+	return "(" + l.(altReprStr) + " / " + r.(altReprStr) + ")", nil
 }
 
 func (me altSymStr) interp(expr iExpr) (repr iAltRepr, err error) {
