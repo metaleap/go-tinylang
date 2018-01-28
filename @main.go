@@ -2,47 +2,48 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
-const taglessFinal = false
-
-type num float64 // just for fmt.Stringer.String()
-
-func (me num) String() string { return fmt.Sprintf("%g", float64(me)) }
-
 func writeLn(s string) { _, _ = os.Stdout.WriteString(s + "\n") }
 
 func main() {
 	repl := bufio.NewScanner(os.Stdin)
-	writeLn(`REPL for our mini 'NanoCalc'
+	writeLn(`REPL for our demo 'NanoCalc'
 language, consisting only of:
-float operands, parens and the
+float operands, parens and the 4
 most basic arithmetic operators
-(of equal precedence: use parens).
+(with no precedence: use parens).
 
-Type:
+Enter:
 · Q to quit
+· A to toggle between:
+  · "ADT" interpreter approach (default)
+  · "Alt" interpreter approach
 · <expr> to parse-and-prettyprint-and-eval
 
 `)
+	alt, interp_prettyprint, interp_eval := false, adtInterp_PrettyPrint, adtInterp_Eval
 	for repl.Scan() {
 		if err := repl.Err(); err != nil {
 			panic(err)
 		} else if readln := strings.TrimSpace(repl.Text()); readln != "" {
 			switch readln {
 			case "q", "Q":
+				writeLn("Bye!")
 				return
-			default:
-				if taglessFinal {
-					err = errors.New("TODO: ttf approach")
+			case "a", "A":
+				if alt = !alt; alt {
+					interp_prettyprint, interp_eval = altInterp_PrettyPrint, altInterp_Eval
+					writeLn("Now using 'Alt' interpreter approach")
 				} else {
-					err = adtParseAndInterp(readln, adtInterp_PrettyPrint, adtInterp_Eval)
+					interp_prettyprint, interp_eval = adtInterp_PrettyPrint, adtInterp_Eval
+					writeLn("Now using 'ADT' interpreter approach")
 				}
-				if err != nil {
+			default:
+				if err = parseAndInterp(readln, interp_prettyprint, interp_eval); err != nil {
 					println(err.Error())
 				}
 			}
@@ -50,10 +51,10 @@ Type:
 	}
 }
 
-func adtParseAndInterp(src string, interps ...adtInterp) (err error) {
-	var expr iAdtExpr
+func parseAndInterp(src string, interps ...interp) (err error) {
+	var expr iExpr
 	var val fmt.Stringer
-	if expr, err = adtParse(src); err == nil {
+	if expr, err = parse(src); err == nil {
 		for _, interp := range interps {
 			if val, err = interp(expr); err != nil {
 				break
@@ -64,24 +65,3 @@ func adtParseAndInterp(src string, interps ...adtInterp) (err error) {
 	}
 	return
 }
-
-func errPick(errs ...error) error {
-	for _, e := range errs {
-		if e != nil {
-			return e
-		}
-	}
-	return nil
-}
-
-func stringer(str interface{}) (s fmt.Stringer) {
-	s, _ = str.(fmt.Stringer)
-	if s == nil {
-		s = strNil{}
-	}
-	return
-}
-
-type strNil struct{}
-
-func (strNil) String() string { return "?" }
