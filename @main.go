@@ -2,23 +2,27 @@ package main
 
 import (
 	"bufio"
+	"errors"
+	"fmt"
 	"os"
 	"strings"
 )
 
-func writeLn(s string) {
-	_, _ = os.Stdout.WriteString(s + "\n")
-}
+const taglessFinal = false
+
+func writeLn(s string) { _, _ = os.Stdout.WriteString(s + "\n") }
 
 func main() {
 	repl := bufio.NewScanner(os.Stdin)
 	writeLn(`REPL for our mini 'NanoCalc'
 language, consisting only of:
 float operands, parens and the
-most basic arithmetic operators:
+most basic arithmetic operators
+(of equal precedence: use parens).
 
-- Q to quit
-- <expr> to parse-and-prettyprint-and-eval
+Type:
+· Q to quit
+· <expr> to parse-and-prettyprint-and-eval
 
 `)
 	for repl.Scan() {
@@ -29,7 +33,12 @@ most basic arithmetic operators:
 			case "q", "Q":
 				return
 			default:
-				if err = parseAndEval(readln); err != nil {
+				if taglessFinal {
+					err = errors.New("TODO: ttf approach")
+				} else {
+					err = adtParseAndInterp(readln, adtInterp_PrettyPrint, adtInterp_Eval)
+				}
+				if err != nil {
 					println(err.Error())
 				}
 			}
@@ -37,12 +46,24 @@ most basic arithmetic operators:
 	}
 }
 
-func parseAndEval(src string) (err error) {
-	var expr *expr
-	if expr, err = parse(src); err == nil {
-		if expr, err = eval(expr); err == nil {
-			println(expr)
+func adtParseAndInterp(src string, interps ...adtInterp) (err error) {
+	var expr iAdtExpr
+	var val fmt.Stringer
+	if expr, err = adtParse(src); err == nil {
+		for _, interp := range interps {
+			if val, err = interp(expr); err != nil {
+				break
+			} else {
+				fmt.Printf("\n%s\n", val)
+			}
 		}
 	}
 	return
+}
+
+func errPick(e1, e2 error) error {
+	if e1 != nil {
+		return e1
+	}
+	return e2
 }
