@@ -3,15 +3,16 @@ package main
 import (
 	"bufio"
 	"os"
-
-	"github.com/go-leap/str"
+	"strings"
 )
 
-var writeln = os.Stdout.WriteString
+func writeLn(s string) {
+	_, _ = os.Stdout.WriteString(s + "\n")
+}
 
 func main() {
 	repl := bufio.NewScanner(os.Stdin)
-	writeln(`REPL for the ad-hoc NanoCalc language, consisting only of number operands and some arithmetic operators:
+	writeLn(`REPL for the ad-hoc NanoCalc language, consisting only of number operands and some arithmetic operators:
 
 - :q to quit
 - <expr> to parse-and-eval
@@ -21,7 +22,7 @@ ReadEvalPrintLoop:
 	for repl.Scan() {
 		if err := repl.Err(); err != nil {
 			panic(err)
-		} else if readln := ustr.Trim(repl.Text()); readln != "" {
+		} else if readln := strings.TrimSpace(repl.Text()); readln != "" {
 			switch readln {
 			case ":q":
 				break ReadEvalPrintLoop
@@ -34,6 +35,12 @@ ReadEvalPrintLoop:
 	}
 }
 
-func parseAndEval(expr string) (err error) {
+func parseAndEval(src string) (err error) {
+	var expr *expr
+	if expr, err = parse(src); err == nil {
+		if expr, err = eval(expr); err == nil {
+			println(expr)
+		}
+	}
 	return
 }
