@@ -15,26 +15,35 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 			case tokenNum:
 				cur = adtNum(float64(xtok))
 			case tokenOpMinus:
-				cur = adtOpSub(nil, nil)
+				cur = adtOp2(nil, "-", nil)
 			case tokenOpPlus:
-				cur = adtOpAdd(nil, nil)
+				cur = adtOp2(nil, "+", nil)
 			case tokenOpSlash:
-				cur = adtOpDiv(nil, nil)
+				cur = adtOp2(nil, "/", nil)
 			case tokenOpTimes:
-				cur = adtOpMul(nil, nil)
+				cur = adtOp2(nil, "*", nil)
 			case tokenSepParenOpen:
 				stack = append(stack, last)
 				last = nil
 			case tokenSepParenClose:
 				if len(stack) == 0 {
-					err = errors.New("mis-matched open/close parens")
-				} else if last == nil {
-					err = errors.New("empty parens")
+					err = errors.New("mis-matched opening and closing parens")
 				} else {
-					outer := stack[len(stack)-1]
+					if last == nil {
+						err = errors.New("empty parens")
+					} else {
+						outer := stack[len(stack)-1]
+						if outer1, ok1 := outer.(adtExprOp1); ok1 {
+							outer1.Right = last
+							last, cur = nil, outer1
+						} else if outer2, ok2 := outer.(adtExprOp2); ok2 {
+							outer2.Right = last
+							last, cur = nil, outer2
+						} else if outer != nil {
+							err = errors.New("how odd")
+						}
+					}
 					stack = stack[:len(stack)-1]
-					cur = last
-					last = outer
 				}
 			}
 			if cur != nil {
@@ -53,7 +62,7 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 			}
 		}
 		if len(stack) > 0 {
-			err = errors.New("not all parens were fully closed")
+			err = errors.New("mis-matched opening and closing parens")
 		}
 		if err == nil {
 			expr = last
@@ -62,38 +71,20 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 	return
 }
 
-func (me adtExprOp1Neg) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
-	err = errors.New("the unexpected occurred --- bug in parser!")
-	return
-}
-
-func (me adtExprOp1Pos) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
+func (me adtExprOp1) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	err = errors.New("the unexpected occurred --- bug in parser!")
 	return
 }
 
 func (me adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	switch xp := prev.(type) {
-	case adtExprOp2Add:
+	case adtExprOp2:
 		if xp.Left == nil {
-			expr = adtOpPos(me)
+			expr = adtOp1(xp.Op, me)
 		} else {
 			xp.Right = me
 			expr = xp
 		}
-	case adtExprOp2Sub:
-		if xp.Left == nil {
-			expr = adtOpNeg(me)
-		} else {
-			xp.Right = me
-			expr = xp
-		}
-	case adtExprOp2Mul:
-		xp.Right = me
-		expr = xp
-	case adtExprOp2Div:
-		xp.Right = me
-		expr = xp
 	}
 	if expr == nil {
 		err = errors.New("invalid symbol preceding " + me.String())
@@ -101,25 +92,7 @@ func (me adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	return
 }
 
-func (me adtExprOp2Add) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
-	me.Left = prev
-	expr = me
-	return
-}
-
-func (me adtExprOp2Sub) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
-	me.Left = prev
-	expr = me
-	return
-}
-
-func (me adtExprOp2Mul) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
-	me.Left = prev
-	expr = me
-	return
-}
-
-func (me adtExprOp2Div) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
+func (me adtExprOp2) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	me.Left = prev
 	expr = me
 	return

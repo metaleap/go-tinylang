@@ -61,9 +61,11 @@ func adtParseAndInterp(src string, interps ...adtInterp) (err error) {
 	return
 }
 
-func errPick(e1, e2 error) error {
-	if e1 != nil {
-		return e1
+func errPick(errs ...error) error {
+	for _, e := range errs {
+		if e != nil {
+			return e
+		}
 	}
-	return e2
+	return nil
 }
