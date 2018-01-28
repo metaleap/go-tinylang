@@ -6,7 +6,7 @@ import (
 
 type iExpr interface {
 	fmt.Stringer
-	parseJoinPrev(iExpr) (iExpr, error)
+	joinPreceding(iExpr) (iExpr, error)
 }
 
 func newLit(n float64) iExpr                   { return &exprLit{Num: num(n)} }
