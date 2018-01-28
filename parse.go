@@ -72,8 +72,6 @@ func (me *exprLit) parseJoinPrev(prev iExpr) (expr iExpr, err error) {
 		if xp.Right == nil {
 			xp.Right = me
 			expr = xp
-		} else {
-			err = errors.New("orphan number " + me.String() + " following unary operator `" + xp.Op + "` expression (use parens for grouping)")
 		}
 	case *exprOp2:
 		if xp.Left == nil {
@@ -81,12 +79,10 @@ func (me *exprLit) parseJoinPrev(prev iExpr) (expr iExpr, err error) {
 		} else if xp.Right == nil {
 			xp.Right = me
 			expr = xp
-		} else {
-			err = errors.New("orphan number " + me.String() + " following binary operator `" + xp.Op + "` expression")
 		}
 	}
-	if expr == nil && err == nil {
-		err = errors.New("invalid symbol preceding " + me.String())
+	if expr == nil {
+		err = errors.New(me.String() + " cannot follow " + str(prev).String())
 	}
 	return
 }
