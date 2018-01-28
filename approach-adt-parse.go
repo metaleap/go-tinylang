@@ -74,7 +74,7 @@ func adtParse(src string) (expr iAdtExpr, err error) {
 	return
 }
 
-func (me *adtExprNum) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
+func (me *adtExprLit) parseJoinPrev(prev iAdtExpr) (expr iAdtExpr, err error) {
 	switch xp := prev.(type) {
 	case *adtExprOp1:
 		if xp.Right == nil {

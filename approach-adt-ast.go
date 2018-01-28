@@ -1,19 +1,17 @@
 package main
 
+// ADT approach --- vs. TTF approach
+
 import (
 	"fmt"
 )
-
-type num float64 // just for fmt.Stringer.String()
-
-func (me num) String() string { return fmt.Sprintf("%g", float64(me)) }
 
 type iAdtExpr interface {
 	fmt.Stringer
 	parseJoinPrev(iAdtExpr) (iAdtExpr, error)
 }
 
-type adtExprNum struct {
+type adtExprLit struct {
 	Num num
 }
 
@@ -29,10 +27,10 @@ type adtExprOp2 struct {
 }
 
 func adtNum(n float64) iAdtExpr {
-	return &adtExprNum{Num: num(n)}
+	return &adtExprLit{Num: num(n)}
 }
 
-func (me *adtExprNum) String() string { return me.Num.String() }
+func (me *adtExprLit) String() string { return me.Num.String() }
 
 func adtOp1(op string, right iAdtExpr) iAdtExpr {
 	return &adtExprOp1{Op: op, Right: right}

@@ -10,6 +10,10 @@ import (
 
 const taglessFinal = false
 
+type num float64 // just for fmt.Stringer.String()
+
+func (me num) String() string { return fmt.Sprintf("%g", float64(me)) }
+
 func writeLn(s string) { _, _ = os.Stdout.WriteString(s + "\n") }
 
 func main() {

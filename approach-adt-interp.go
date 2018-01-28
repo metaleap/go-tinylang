@@ -8,7 +8,7 @@ type adtInterp func(expr iAdtExpr) (fmt.Stringer, error)
 
 func adtInterp_Eval(expr iAdtExpr) (fmt.Stringer, error) {
 	switch me := expr.(type) {
-	case *adtExprNum:
+	case *adtExprLit:
 		return num(me.Num), nil
 	case *adtExprOp1:
 		if me.Right != nil {
