@@ -39,10 +39,6 @@ type iAltSymantics interface {
 
 type altSymNum struct{}
 
-func (me altSymNum) lit(n num) iAltRepr {
-	return altReprNum(n)
-}
-
 func (me altSymNum) neg(r iAltRepr) iAltRepr {
 	return -(r.(altReprNum))
 }
