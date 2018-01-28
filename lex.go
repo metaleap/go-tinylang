@@ -25,10 +25,8 @@ func lex(src string) (tokens []token, err error) { // accumulating in a return s
 	var lex scanner.Scanner
 	lex.Init(strings.NewReader(src)).Filename = src
 	lex.Mode = scanner.ScanFloats | scanner.ScanInts | scanner.SkipComments
-	lex.Error = func(_ *scanner.Scanner, errmsg string) {
-		err = errors.New(errmsg)
-	}
-	for tok := lex.Scan(); err == nil && tok != scanner.EOF; tok = lex.Scan() {
+	lex.Error = func(_ *scanner.Scanner, msg string) { err = errors.New(msg) }
+	for tok := lex.Scan(); (err == nil) && (tok != scanner.EOF); tok = lex.Scan() {
 		if sym := lex.TokenText(); sym != "" { // should never be "", but we're defensive for once
 			switch tok {
 			case scanner.Float:

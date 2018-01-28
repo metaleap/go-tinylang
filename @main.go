@@ -12,20 +12,22 @@ func writeLn(s string) {
 
 func main() {
 	repl := bufio.NewScanner(os.Stdin)
-	writeLn(`REPL for the ad-hoc NanoCalc language, consisting only of float operands, parens and the most basic arithmetic operators:
+	writeLn(`REPL for our mini 'NanoCalc'
+language, consisting only of:
+float operands, parens and the
+most basic arithmetic operators:
 
-- :q to quit
-- <expr> to parse-and-eval
+- Q to quit
+- <expr> to parse-and-prettyprint-and-eval
 
 `)
-ReadEvalPrintLoop:
 	for repl.Scan() {
 		if err := repl.Err(); err != nil {
 			panic(err)
 		} else if readln := strings.TrimSpace(repl.Text()); readln != "" {
 			switch readln {
-			case ":q":
-				break ReadEvalPrintLoop
+			case "q", "Q":
+				return
 			default:
 				if err = parseAndEval(readln); err != nil {
 					println(err.Error())
