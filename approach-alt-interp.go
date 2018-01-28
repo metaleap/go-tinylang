@@ -1,25 +1,19 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
-func altInterp_Eval(expr iExpr) (fmt.Stringer, error) {
-	return altInterp(expr, altSymNum{})
-}
-
 func altInterp_PrettyPrint(expr iExpr) (fmt.Stringer, error) {
-	return altInterp(expr, altSymStr{})
+	return altSymStr{}.interp(expr)
 }
 
-func altInterp(expr iExpr, sym iAltSymantics) (iAltRepr, error) {
-	return sym.interp(expr)
+func altInterp_Eval(expr iExpr) (fmt.Stringer, error) {
+	return altSymNum{}.interp(expr)
 }
 
 type iAltRepr interface {
 	fmt.Stringer
-	repr()
 }
 
 type iAltSymantics interface {
@@ -35,7 +29,6 @@ type iAltSymantics interface {
 
 type altReprNum num
 
-func (altReprNum) repr()             {}
 func (me altReprNum) String() string { return num(me).String() }
 
 type altSymNum struct{}
@@ -67,7 +60,7 @@ func (me altSymNum) mul(l iAltRepr, r iAltRepr) iAltRepr {
 func (me altSymNum) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	left, right := l.(altReprNum), r.(altReprNum)
 	if right == 0 {
-		return right, errors.New("division of " + l.String() + " by zero")
+		return right, errInterpDiv0(l.String())
 	}
 	return left / right, nil
 }
@@ -86,7 +79,6 @@ func (me altSymNum) interp(expr iExpr) (repr iAltRepr, err error) {
 
 type altReprStr string
 
-func (altReprStr) repr()             {}
 func (me altReprStr) String() string { return string(me) }
 
 type altSymStr struct{}
@@ -140,9 +132,11 @@ func altInterpOp1(me iAltSymantics, expr *exprOp1) (repr iAltRepr, err error) {
 		fn = me.neg
 	}
 	if fn == nil {
-		err = errors.New("invalid unary operator: " + expr.Op)
+		err = errInterpBadOp1(expr.Op)
+	} else if expr.Right == nil {
+		err = errInterpLate(expr)
 	} else if repr, err = me.interp(expr.Right); err == nil {
-		repr = me.pos(repr)
+		repr = fn(repr)
 	} else {
 		repr = nil
 	}
@@ -166,7 +160,9 @@ func altInterpOp2(me iAltSymantics, expr *exprOp2) (repr iAltRepr, err error) {
 	}
 	var left, right iAltRepr
 	if fn == nil {
-		err = errors.New("invalid binary operator: " + expr.Op)
+		err = errInterpBadOp2(expr.Op)
+	} else if expr.Left == nil || expr.Right == nil {
+		err = errInterpLate(expr)
 	} else if left, err = me.interp(expr.Left); err == nil {
 		if right, err = me.interp(expr.Right); err == nil {
 			repr = fn(left, right)

@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+func adtInterp_PrettyPrint(expr iExpr) (fmt.Stringer, error) {
+	return expr, nil
+}
+
 func adtInterp_Eval(expr iExpr) (fmt.Stringer, error) {
 	switch me := expr.(type) {
 	case *exprLit:
@@ -17,7 +21,7 @@ func adtInterp_Eval(expr iExpr) (fmt.Stringer, error) {
 			case "-":
 				return -(n.(num)), e
 			default:
-				return n.(num), fmt.Errorf("invalid unary operator: " + me.Op)
+				return n.(num), errInterpBadOp1(me.Op)
 			}
 		}
 	case *exprOp2:
@@ -33,15 +37,13 @@ func adtInterp_Eval(expr iExpr) (fmt.Stringer, error) {
 				return n1.(num) * n2.(num), errPick(e1, e2)
 			case "/":
 				if n2.(num) == 0.0 {
-					return num(0), errPick(e1, e2, fmt.Errorf("division by zero in: %s", expr))
+					return num(0), errPick(e1, e2, errInterpDiv0(expr.String()))
 				}
 				return n1.(num) / n2.(num), errPick(e1, e2)
+			default:
+				return num(0), errInterpBadOp2(me.Op)
 			}
 		}
 	}
-	return num(0), fmt.Errorf("invalid operand or operator in: %s", expr)
-}
-
-func adtInterp_PrettyPrint(expr iExpr) (fmt.Stringer, error) {
-	return expr, nil
+	return num(0), errInterpLate(expr)
 }

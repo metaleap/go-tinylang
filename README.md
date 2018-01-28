@@ -25,7 +25,7 @@ interpreters.
 
 Two interpreters are built-in:
 
-- **eval** — arithmetic reduction of parsed expression tree
+- **eval** — arithmetic reduction of parsed expression tree to final numeric result
 - **pretty-print** — string-formatting of parsed expression tree
 
 (Other "interpreters" could be optimizers, byte-code
