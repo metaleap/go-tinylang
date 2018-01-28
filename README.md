@@ -28,8 +28,10 @@ Two interpreters are built-in:
 - **eval** — arithmetic reduction of parsed expression tree to final numeric result
 - **pretty-print** — string-formatting of parsed expression tree
 
-(Other "interpreters" could be optimizers, byte-code
-generators, transpilers, compilers etc.)
+(Other "interpreters" —more so in the general case,
+less so for the mini-language at hand— could be
+optimizers, simplifiers, byte-code generators,
+transpilers, compilers etc..)
 
 Furthermore, **two approaches to interpretation** of the
 syntax-tree (each sporting its own *eval* and own
@@ -44,9 +46,9 @@ the terser and more comprehensible one;
 implement the "tagless final" approach cited
 in more detail below. While this would be
 the much more desirable approach in a language
-such as Haskell (*and* when targeting E-DSLs),
-in Go (and targeting lexed-parsed instead of
-embeddded languages) it immediately necessitates
+such as Haskell (*and* targeting embedded DSLs),
+in Go (and targeting lexed-and-parsed instead of
+embedded languages) it immediately necessitates
 such endless plumbing and hard-coding that any
 theoretical gains are overshadowed by code bloat.
 (Especially so if one wanted to progress
