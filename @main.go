@@ -12,7 +12,7 @@ func writeLn(s string) {
 
 func main() {
 	repl := bufio.NewScanner(os.Stdin)
-	writeLn(`REPL for the ad-hoc NanoCalc language, consisting only of number operands and some arithmetic operators:
+	writeLn(`REPL for the ad-hoc NanoCalc language, consisting only of float operands, parens and the most basic arithmetic operators:
 
 - :q to quit
 - <expr> to parse-and-eval
@@ -28,7 +28,7 @@ ReadEvalPrintLoop:
 				break ReadEvalPrintLoop
 			default:
 				if err = parseAndEval(readln); err != nil {
-					println(err)
+					println(err.Error())
 				}
 			}
 		}
