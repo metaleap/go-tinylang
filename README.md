@@ -44,18 +44,19 @@ the terser and more comprehensible one;
 
 - `approach-alt-interp.go` — an attempt to
 implement the "tagless final" approach cited
-in more detail below. While this would be
-the much more desirable approach in a language
-such as Haskell (*and* targeting embedded DSLs),
+in more detail below. While this would be much
+more desirable approach in a language such as
+Haskell (*and* when targeting *embedded* DSLs),
 in Go (and targeting lexed-and-parsed instead of
 embedded languages) it immediately necessitates
 such endless plumbing and hard-coding that any
-theoretical gains are overshadowed by code bloat.
-Ultimately, most of the "almost-magic" convenience
+theoretical gains are overshadowed by code bloat
+(especially so if one wanted to progress
+*beyond* chapter 2 of `lecture.pdf`...)
+— ultimately, most of the "almost-magic" convenience
 of tagless-final seems afforded by the expressive power
 of Haskell's type-classes and parametric polymorphism.
-(Especially so if one wanted to progress
-*beyond* chapter 2 of `lecture.pdf`...)
+
 
 
 ## Original intention:
