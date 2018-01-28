@@ -72,9 +72,9 @@ func (me altSymNum) interp(expr iExpr) (repr iAltRepr, err error) {
 	case *exprLit:
 		repr = altReprNum(x.Num)
 	case *exprOp1:
-		repr, err = altInterpOp1(me, x)
+		repr, err = _altInterpOp1(me, x)
 	case *exprOp2:
-		repr, err = altInterpOp2(me, x)
+		repr, err = _altInterpOp2(me, x)
 	}
 	if err != nil {
 		repr = altReprNum(0)
@@ -83,6 +83,8 @@ func (me altSymNum) interp(expr iExpr) (repr iAltRepr, err error) {
 }
 
 type altSymStr struct{}
+
+// altSymStr ignores that iExpr implements fmt.Stringer (or pretends that it might not; or does not require it to) ——— for demo reasons
 
 func (me altSymStr) neg(r iAltRepr) iAltRepr {
 	return "(-" + r.(altReprStr) + ")"
@@ -113,9 +115,9 @@ func (me altSymStr) interp(expr iExpr) (repr iAltRepr, err error) {
 	case *exprLit:
 		repr = altReprStr(x.String())
 	case *exprOp1:
-		repr, err = altInterpOp1(me, x)
+		repr, err = _altInterpOp1(me, x)
 	case *exprOp2:
-		repr, err = altInterpOp2(me, x)
+		repr, err = _altInterpOp2(me, x)
 	}
 	if err != nil {
 		repr = altReprStr("")
@@ -123,7 +125,7 @@ func (me altSymStr) interp(expr iExpr) (repr iAltRepr, err error) {
 	return
 }
 
-func altInterpOp1(me iAltSymantics, expr *exprOp1) (repr iAltRepr, err error) {
+func _altInterpOp1(me iAltSymantics, expr *exprOp1) (repr iAltRepr, err error) {
 	var fn func(iAltRepr) iAltRepr
 	switch expr.Op {
 	case "+":
@@ -143,7 +145,7 @@ func altInterpOp1(me iAltSymantics, expr *exprOp1) (repr iAltRepr, err error) {
 	return
 }
 
-func altInterpOp2(me iAltSymantics, expr *exprOp2) (repr iAltRepr, err error) {
+func _altInterpOp2(me iAltSymantics, expr *exprOp2) (repr iAltRepr, err error) {
 	var fn func(iAltRepr, iAltRepr) iAltRepr
 	switch expr.Op {
 	case "+":
