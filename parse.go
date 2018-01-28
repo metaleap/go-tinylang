@@ -49,7 +49,7 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 				prev = nil
 				break
 			} else if prev == nil {
-				err = errors.New("parse error")
+				err = errors.New("bug in parser: joinPreceding returned nil,nil")
 				break
 			}
 		}
