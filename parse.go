@@ -40,8 +40,9 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 				}
 				stack = stack[:len(stack)-1]
 			}
-		}
-		if cur != nil {
+		} // switch-case token.(type)
+
+		if err == nil && cur != nil {
 			if last == nil {
 				last = cur
 			} else if last, err = cur.parseJoinPrev(last); err != nil {
@@ -56,7 +57,7 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 			break
 		}
 	}
-	if len(stack) > 0 {
+	if err == nil && len(stack) > 0 {
 		err = errors.New("opening/closing parens mis-match")
 	}
 	if err == nil {
