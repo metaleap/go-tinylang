@@ -19,7 +19,7 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 				stack = append(stack, last)
 				last = nil
 			} else if len(stack) == 0 {
-				err = errors.New("mis-matched opening/closing parens")
+				err = errors.New("excess closing paren")
 			} else {
 				if last == nil {
 					err = errors.New("empty parens")
@@ -57,7 +57,7 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 		}
 	}
 	if len(stack) > 0 {
-		err = errors.New("invalid parens placement or opening/closing parens mis-match")
+		err = errors.New("opening/closing parens mis-match")
 	}
 	if err == nil {
 		expr = last
