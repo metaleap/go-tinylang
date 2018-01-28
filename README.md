@@ -51,6 +51,9 @@ in Go (and targeting lexed-and-parsed instead of
 embedded languages) it immediately necessitates
 such endless plumbing and hard-coding that any
 theoretical gains are overshadowed by code bloat.
+Ultimately, most of the "almost-magic" convenience
+of tagless-final seems afforded by the expressive power
+of Haskell's type-classes and parametric polymorphism.
 (Especially so if one wanted to progress
 *beyond* chapter 2 of `lecture.pdf`...)
 
