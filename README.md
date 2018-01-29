@@ -48,8 +48,8 @@ http://okmij.org/ftp/tagless-final/course/lecture.pdf
 more desirable in a language such as Haskell (*and*
 when targeting *embedded* DSLs), in Go (and targeting
 lexed-and-parsed instead of embedded languages) it soon
-necessitates tedious-read-and-write code bloat — as it
-turns out, much of the "almost-magic" convenience of
+necessitates tedious-to-read-and-write code bloat — as
+it turns out, much of the "almost-magic" convenience of
 tagless-final is truly afforded by the expressive power
 of Haskell's type-classes and parametric polymorphism,
 and so to transfer the idea to a very-low-level language
