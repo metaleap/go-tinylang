@@ -97,7 +97,7 @@ func (me *exprLit) joinPreceding(prev iExpr) (expr iExpr, err error) {
 		}
 	}
 	if expr == nil {
-		err = errors.New(me.String() + " cannot follow " + str(prev).String())
+		err = errors.New(me.String() + " cannot follow " + str(prev, "?").String())
 	}
 	return
 }

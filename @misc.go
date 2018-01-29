@@ -41,14 +41,14 @@ func errInterpLate(expr iExpr) error {
 	return errors.New("invalid operand or operator in: " + expr.String())
 }
 
-func str(any interface{}) (stringer fmt.Stringer) {
+func str(any interface{}, fallback string) (stringer fmt.Stringer) {
 	stringer, _ = any.(fmt.Stringer)
 	if stringer == nil {
-		stringer = strNil{}
+		stringer = stringish(fallback)
 	}
 	return
 }
 
-type strNil struct{}
+type stringish string
 
-func (strNil) String() string { return "?" }
+func (me stringish) String() string { return string(me) }

@@ -29,5 +29,7 @@ type exprOp2 struct {
 }
 
 func (me *exprLit) String() string { return me.Num.String() }
-func (me *exprOp1) String() string { return strf("(%s%s)", me.Op, str(me.Right)) }
-func (me *exprOp2) String() string { return strf("(%s %s %s)", str(me.Left), me.Op, str(me.Right)) }
+func (me *exprOp1) String() string { return strf("(%s%s)", me.Op, str(me.Right, "?")) }
+func (me *exprOp2) String() string {
+	return strf("(%s %s %s)", str(me.Left, "?"), me.Op, str(me.Right, "?"))
+}

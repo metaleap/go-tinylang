@@ -28,6 +28,7 @@ func (me altReprStr) String() string { return string(me) }
 // language vocabulary
 type iAltSymantics interface {
 	interp(iExpr) (iAltRepr, error)
+	lit(*exprLit) iAltRepr
 
 	neg(iAltRepr) iAltRepr
 	pos(iAltRepr) iAltRepr
@@ -67,19 +68,16 @@ func (me altSymNum) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	return left / right, nil
 }
 
-func (me altSymNum) interp(expr iExpr) (repr iAltRepr, err error) {
-	switch x := expr.(type) {
-	case *exprLit:
-		repr = altReprNum(x.Num)
-	case *exprOp1:
-		repr, err = _altInterpOp1(me, x)
-	case *exprOp2:
-		repr, err = _altInterpOp2(me, x)
+func (me altSymNum) lit(numLit *exprLit) iAltRepr {
+	var n num
+	if numLit != nil {
+		n = numLit.Num
 	}
-	if err != nil {
-		repr = altReprNum(0)
-	}
-	return
+	return altReprNum(n)
+}
+
+func (me altSymNum) interp(expr iExpr) (iAltRepr, error) {
+	return _altInterp(me, expr)
 }
 
 type altSymStr struct{}
@@ -110,17 +108,29 @@ func (me altSymStr) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	return "(" + l.(altReprStr) + " / " + r.(altReprStr) + ")", nil
 }
 
-func (me altSymStr) interp(expr iExpr) (repr iAltRepr, err error) {
+func (me altSymStr) lit(numLit *exprLit) iAltRepr {
+	var s string
+	if numLit != nil {
+		s = numLit.Num.String()
+	}
+	return altReprStr(s)
+}
+
+func (me altSymStr) interp(expr iExpr) (iAltRepr, error) {
+	return _altInterp(me, expr)
+}
+
+func _altInterp(me iAltSymantics, expr iExpr) (repr iAltRepr, err error) {
 	switch x := expr.(type) {
 	case *exprLit:
-		repr = altReprStr(x.String())
+		repr = me.lit(x)
 	case *exprOp1:
 		repr, err = _altInterpOp1(me, x)
 	case *exprOp2:
 		repr, err = _altInterpOp2(me, x)
 	}
 	if err != nil {
-		repr = altReprStr("")
+		repr = me.lit(nil)
 	}
 	return
 }
