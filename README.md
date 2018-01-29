@@ -16,9 +16,9 @@ This little program's *Welcome* message says it all:
 ## Purpose:
 
 A self-contained (stdlib-only, no deps) interactive
-Read-Eval-Print-Loop (REPL) of a minimalist tiny language
-with multiple (principally / architecturally "pluggable")
-interpreters.
+Read-Eval-Print-Loop (REPL) of a minimalist tiny uni-typed
+language with multiple (principally / architecturally
+"pluggable") interpreters.
 
 **That is: a minimal working skeleton for developing
 (in Go) custom languages to be lexed-parsed-and-interpreted.**
@@ -42,49 +42,16 @@ probably the more intuitive, idiomatic, common
 approach — also in retrospect, at least in Go,
 the terser and more comprehensible one;
 
-- `approach-alt-interp.go` — an attempt to
-implement the "tagless final" approach cited
-in more detail below. While this would be much
-more desirable approach in a language such as
-Haskell (*and* when targeting *embedded* DSLs),
-in Go (and targeting lexed-and-parsed instead of
-embedded languages) it immediately necessitates
-such endless plumbing and hard-coding that any
-theoretical gains are overshadowed by code bloat
-(especially so if one wanted to progress
-*beyond* chapter 2 of `lecture.pdf`...)
-— ultimately, most of the "almost-magic" convenience
-of tagless-final seems afforded by the expressive power
-of Haskell's type-classes and parametric polymorphism.
-
-
-
-## Original intention:
-
-aka. "original *readme*":
-
-~~Primarily, this "toy-lang REPL"s commit history
-mirrors my chapter-by-chapter walk through
-http://okmij.org/ftp/tagless-final/course/lecture.pdf~~
-
-~~Many of of the various benefits outlined by Oleg
-would technically never *really materialize* in Go
-as powerfully as they would in (for example) Haskell,
-of course. I don't care about actual, compile-time
-type-checked EDSLs-for-Go here anyway, just the
-general parse+eval strategy still arising from it all.
-Much of the elegance and terseness a Haskell
-implementation would enjoy, will naturally be lost
-in Go: no type-variables, no parametric polymorphism,
-no equivalent (in power) to Haskell type-classes etc.~~
-
-~~However, the notion of an alternative approach
-to ADTs (aka. "countless type-switches" in Go),
-promising "more pluggable" evaluators and
-more-conveniently-extensible dialects, sounds
-worth exploring and tinkering with.~~
-
-~~It could also well be that outside of a language
-like Haskell, the gains are too small and the costs
-too high. Only one way to find out! (Well, only-one
-for *me*, that is.)~~
+- `approach-alt-interp.go` — inspired by
+http://okmij.org/ftp/tagless-final/course/lecture.pdf
+(chapter 2 only) — while this approach would be much
+more desirable in a language such as Haskell (*and*
+when targeting *embedded* DSLs), in Go (and targeting
+lexed-and-parsed instead of embedded languages) it soon
+necessitates tedious-read-and-write code bloat — as it
+turns out, much of the "almost-magic" convenience of
+tagless-final is truly afforded by the expressive power
+of Haskell's type-classes and parametric polymorphism,
+and so to transfer the idea to a very-low-level language
+would amount to furnishing a code-generator not far in
+its capabilities from a Haskell compiler! Not on, for now.
