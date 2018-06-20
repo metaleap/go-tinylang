@@ -19,11 +19,11 @@ type iAltRepr interface{}
 
 type altReprNum num
 
-func (me altReprNum) String() string { return num(me).String() }
+func (this altReprNum) String() string { return num(this).String() }
 
 type altReprStr string
 
-func (me altReprStr) String() string { return string(me) }
+func (this altReprStr) String() string { return string(this) }
 
 // language vocabulary
 type iAltSymantics interface {
@@ -40,27 +40,12 @@ type iAltSymantics interface {
 
 type altSymNum struct{}
 
-func (me altSymNum) neg(r iAltRepr) iAltRepr {
-	return -(r.(altReprNum))
-}
-
-func (me altSymNum) pos(r iAltRepr) iAltRepr {
-	return +(r.(altReprNum))
-}
-
-func (me altSymNum) add(l iAltRepr, r iAltRepr) iAltRepr {
-	return l.(altReprNum) + r.(altReprNum)
-}
-
-func (me altSymNum) sub(l iAltRepr, r iAltRepr) iAltRepr {
-	return l.(altReprNum) - r.(altReprNum)
-}
-
-func (me altSymNum) mul(l iAltRepr, r iAltRepr) iAltRepr {
-	return l.(altReprNum) * r.(altReprNum)
-}
-
-func (me altSymNum) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
+func (altSymNum) neg(r iAltRepr) iAltRepr             { return -(r.(altReprNum)) }
+func (altSymNum) pos(r iAltRepr) iAltRepr             { return +(r.(altReprNum)) }
+func (altSymNum) add(l iAltRepr, r iAltRepr) iAltRepr { return l.(altReprNum) + r.(altReprNum) }
+func (altSymNum) sub(l iAltRepr, r iAltRepr) iAltRepr { return l.(altReprNum) - r.(altReprNum) }
+func (altSymNum) mul(l iAltRepr, r iAltRepr) iAltRepr { return l.(altReprNum) * r.(altReprNum) }
+func (altSymNum) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	left, right := l.(altReprNum), r.(altReprNum)
 	if right == 0 {
 		return altReprNum(0), errInterpDiv0(left.String())
@@ -68,7 +53,7 @@ func (me altSymNum) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	return left / right, nil
 }
 
-func (me altSymNum) lit(numLit *exprLit) iAltRepr {
+func (this altSymNum) lit(numLit *exprLit) iAltRepr {
 	var n num
 	if numLit != nil {
 		n = numLit.Num
@@ -76,39 +61,30 @@ func (me altSymNum) lit(numLit *exprLit) iAltRepr {
 	return altReprNum(n)
 }
 
-func (me altSymNum) interp(expr iExpr) (iAltRepr, error) {
-	return _altInterp(me, expr)
+func (this altSymNum) interp(expr iExpr) (iAltRepr, error) {
+	return _altInterp(this, expr)
 }
 
 type altSymStr struct{}
 
 // altSymStr ignores that iExpr implements fmt.Stringer (or pretends that it might not; or does not require it to) ——— for demo reasons
 
-func (me altSymStr) neg(r iAltRepr) iAltRepr {
-	return "(-" + r.(altReprStr) + ")"
-}
-
-func (me altSymStr) pos(r iAltRepr) iAltRepr {
-	return "(+" + r.(altReprStr) + ")"
-}
-
-func (me altSymStr) add(l iAltRepr, r iAltRepr) iAltRepr {
+func (altSymStr) neg(r iAltRepr) iAltRepr { return "(-" + r.(altReprStr) + ")" }
+func (altSymStr) pos(r iAltRepr) iAltRepr { return "(+" + r.(altReprStr) + ")" }
+func (altSymStr) add(l iAltRepr, r iAltRepr) iAltRepr {
 	return "(" + l.(altReprStr) + " + " + r.(altReprStr) + ")"
 }
-
-func (me altSymStr) sub(l iAltRepr, r iAltRepr) iAltRepr {
+func (altSymStr) sub(l iAltRepr, r iAltRepr) iAltRepr {
 	return "(" + l.(altReprStr) + " - " + r.(altReprStr) + ")"
 }
-
-func (me altSymStr) mul(l iAltRepr, r iAltRepr) iAltRepr {
+func (altSymStr) mul(l iAltRepr, r iAltRepr) iAltRepr {
 	return "(" + l.(altReprStr) + " * " + r.(altReprStr) + ")"
 }
-
-func (me altSymStr) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
+func (altSymStr) div(l iAltRepr, r iAltRepr) (iAltRepr, error) {
 	return "(" + l.(altReprStr) + " / " + r.(altReprStr) + ")", nil
 }
 
-func (me altSymStr) lit(numLit *exprLit) iAltRepr {
+func (altSymStr) lit(numLit *exprLit) iAltRepr {
 	var s string
 	if numLit != nil {
 		s = numLit.Num.String()
@@ -116,8 +92,8 @@ func (me altSymStr) lit(numLit *exprLit) iAltRepr {
 	return altReprStr(s)
 }
 
-func (me altSymStr) interp(expr iExpr) (iAltRepr, error) {
-	return _altInterp(me, expr)
+func (this altSymStr) interp(expr iExpr) (iAltRepr, error) {
+	return _altInterp(this, expr)
 }
 
 func _altInterp(me iAltSymantics, expr iExpr) (repr iAltRepr, err error) {

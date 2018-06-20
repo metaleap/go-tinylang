@@ -66,38 +66,38 @@ func parse(tokenStream []iToken) (expr iExpr, err error) {
 	return
 }
 
-func (me *exprOp1) joinPreceding(prev iExpr) (expr iExpr, err error) {
-	err = errors.New("unexpected left-hand side of unary operator: " + me.Op)
+func (this *exprOp1) joinPreceding(prev iExpr) (expr iExpr, err error) {
+	err = errors.New("unexpected left-hand side of unary operator: " + this.Op)
 	return
 }
 
-func (me *exprOp2) joinPreceding(prev iExpr) (expr iExpr, err error) {
+func (this *exprOp2) joinPreceding(prev iExpr) (expr iExpr, err error) {
 	if op2, _ := prev.(*exprOp2); op2 != nil && op2.Left == nil && op2.Right == nil {
-		expr = newOp1(op2.Op, me)
+		expr = newOp1(op2.Op, this)
 	} else {
-		me.Left = prev
-		expr = me
+		this.Left = prev
+		expr = this
 	}
 	return
 }
 
-func (me *exprLit) joinPreceding(prev iExpr) (expr iExpr, err error) {
+func (this *exprLit) joinPreceding(prev iExpr) (expr iExpr, err error) {
 	switch prevop := prev.(type) {
 	case *exprOp1:
 		if prevop.Right == nil {
-			prevop.Right = me
+			prevop.Right = this
 			expr = prevop
 		}
 	case *exprOp2:
 		if prevop.Left == nil {
-			expr = newOp1(prevop.Op, me)
+			expr = newOp1(prevop.Op, this)
 		} else if prevop.Right == nil {
-			prevop.Right = me
+			prevop.Right = this
 			expr = prevop
 		}
 	}
 	if expr == nil {
-		err = errors.New(me.String() + " cannot follow " + str(prev, "?").String())
+		err = errors.New(this.String() + " cannot follow " + str(prev, "?").String())
 	}
 	return
 }

@@ -10,7 +10,7 @@ type interpreter func(expr iExpr) (fmt.Stringer, error)
 
 type num float64
 
-func (me num) String() string { return strf("%g", float64(me)) }
+func (this num) String() string { return strf("%g", float64(this)) }
 
 var strf = fmt.Sprintf
 
@@ -51,4 +51,4 @@ func str(any interface{}, fallback string) (stringer fmt.Stringer) {
 
 type stringish string
 
-func (me stringish) String() string { return string(me) }
+func (this stringish) String() string { return string(this) }

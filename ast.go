@@ -28,8 +28,8 @@ type exprOp2 struct {
 	Right iExpr
 }
 
-func (me *exprLit) String() string { return me.Num.String() }
-func (me *exprOp1) String() string { return strf("(%s%s)", me.Op, str(me.Right, "?")) }
-func (me *exprOp2) String() string {
-	return strf("(%s %s %s)", str(me.Left, "?"), me.Op, str(me.Right, "?"))
+func (this *exprLit) String() string { return this.Num.String() }
+func (this *exprOp1) String() string { return strf("(%s%s)", this.Op, str(this.Right, "?")) }
+func (this *exprOp2) String() string {
+	return strf("(%s %s %s)", str(this.Left, "?"), this.Op, str(this.Right, "?"))
 }
